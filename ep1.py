@@ -3,8 +3,17 @@ import argparse
 import sys
 from os import system as system_call 
 import random
+import math
+
+aluno1 = -1.0
+aluno2 = -0.5
+aluno3 = 0.0
+aluno4 = 0.5
+aluno5 = 1.0
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
+
+
 
 class Questao():
 	a = 0.0
@@ -13,6 +22,8 @@ class Questao():
 	def __init__(self, a ,b):
 		self.a = a
 		self.b = b
+
+
 
 def sortear_questoes(questoes, numero):
 	questoes_sorteadas = random.sample(questoes, numero)
@@ -25,12 +36,16 @@ def ler_questoes():
 		data = f.readlines()
 		for registro in data:
 			a, b = registro.split(' ')
+			a = float(a)
+			b = float(b)
 			questao_atual = Questao(a, b)
 			questoes.append(questao_atual)
 	return questoes
 
-def TRI(aluno, question):
-	return
+def TRI(aluno, questao):
+	valor = math.exp(questao.a*(aluno - questao.b))
+	pr = valor / (1 + valor)
+	return pr
 
 def exponencial(valor):
 	return
@@ -49,3 +64,4 @@ def problema2_3():
 if __name__=='__main__':	
 	a = ler_questoes()
 	b = sortear_questoes(a, 2)
+	print(TRI(aluno5, b[1]))
