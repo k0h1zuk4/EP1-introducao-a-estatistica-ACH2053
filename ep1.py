@@ -2,6 +2,7 @@ import os
 import argparse
 import sys
 from os import system as system_call 
+import random
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -14,7 +15,9 @@ class Questao():
 		self.b = b
 
 def sortear_questoes(questoes, numero):
-	return
+	questoes_sorteadas = random.sample(questoes, numero)
+	return questoes_sorteadas
+
 
 def ler_questoes():	
 	questoes = []
@@ -44,4 +47,5 @@ def problema2_3():
 
 
 if __name__=='__main__':	
-	ler_questoes()
+	a = ler_questoes()
+	b = sortear_questoes(a, 2)
