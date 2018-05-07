@@ -48,19 +48,25 @@ def TRI(aluno, questao):
 
 
 def problema2_1(questoes, numero, aluno):
-	soma_total = 0
+	total_aluno = 0
 
-	for number in range(10000):
+	for number in range(100000):
 		questoes_sorteadas = sortear_questoes(questoes, numero)
 		
 		soma_das_pr_prova = 0
+		soma_das_pr_prova5 = 0
 
 		for questao in questoes_sorteadas:
-			soma_das_pr_prova = soma_das_pr_prova + TRI(aluno,questao)
+			print (TRI(aluno, questao)/numero)
+			print (TRI(aluno5, questao)/numero)
+			print ("----------------")
+			soma_das_pr_prova = soma_das_pr_prova + (TRI(aluno,questao)/numero)
+			soma_das_pr_prova5 = soma_das_pr_prova5 + (TRI(aluno5,questao)/numero)
+		
+		if (soma_das_pr_prova) > (soma_das_pr_prova5):
+			total_aluno = total_aluno + 1
 
-		soma_total = soma_total + (soma_das_pr_prova / 20)	
-
-	resultado = (soma_total / 10000)
+	resultado = (100000 - total_aluno)/100000
 	return resultado	
 
 	
@@ -75,4 +81,4 @@ def problema2_3():
 if __name__=='__main__':	
 	a = ler_questoes()
 	b = sortear_questoes(a, 4)
-	print (problema2_1(a, 20, aluno5))
+	print (problema2_1(a, 20, aluno3))
