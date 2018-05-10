@@ -53,20 +53,23 @@ def problema2_1(questoes, numero, aluno):
 	for number in range(100000):
 		questoes_sorteadas = sortear_questoes(questoes, numero)
 		
-		soma_das_pr_prova = 0
-		soma_das_pr_prova5 = 0
+		nota = 0
+		nota5 = 0
 
 		for questao in questoes_sorteadas:
-			print (TRI(aluno, questao)/numero)
-			print (TRI(aluno5, questao)/numero)
-			print ("----------------")
-			soma_das_pr_prova = soma_das_pr_prova + (TRI(aluno,questao)/numero)
-			soma_das_pr_prova5 = soma_das_pr_prova5 + (TRI(aluno5,questao)/numero)
-		
-		if (soma_das_pr_prova) > (soma_das_pr_prova5):
-			total_aluno = total_aluno + 1
+			acertou = random.uniform(0.0, 1.0)
+			acertou5 = random.uniform(0.0, 1.0)
 
-	resultado = (100000 - total_aluno)/100000
+			if (TRI(aluno,questao)) > acertou:
+				nota = nota + 1
+			if (TRI(aluno5, questao)) > acertou5:
+				nota5 = nota5 + 1	
+		
+		if nota > nota5:
+			total_aluno = total_aluno + 1
+	
+	resultado = (100000 - total_aluno) / 100000
+
 	return resultado	
 
 	
