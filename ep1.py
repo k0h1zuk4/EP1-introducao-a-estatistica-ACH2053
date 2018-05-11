@@ -73,9 +73,27 @@ def problema2_1(questoes, numero, aluno):
 	return resultado	
 
 	
+#checa porbabilidade media de acertar um quetao na prova
+def problema2_2(questoes, numero):
+	melhor_pr = 0.0
+	melhor_prova = None
 
-def problema2_2():
-	return
+	for number in range(100000):
+		questoes_sorteadas = sortear_questoes(questoes, numero)
+		
+		pr_atual = 0.0
+		prova_atual = []
+
+		for questao in questoes_sorteadas: 
+			pr = TRI(aluno5, questao)
+			prova_atual.append(questao)	
+			pr_atual = pr_atual + (pr/numero)
+
+		if pr_atual > melhor_pr:
+			pr_atual = melhor_pr
+			melhor_prova = pr_atual
+
+	return melhor_prova
 
 def problema2_3():
 	return
@@ -84,4 +102,4 @@ def problema2_3():
 if __name__=='__main__':	
 	a = ler_questoes()
 	b = sortear_questoes(a, 4)
-	print (problema2_1(a, 20, aluno3))
+	print (problema2_1(a, 20, aluno1))
