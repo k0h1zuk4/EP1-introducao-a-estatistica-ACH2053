@@ -161,20 +161,20 @@ if __name__=='__main__':
 	
 	print ('10 questoes')
 	pr_10 = problema2_2(a, 10, aluno4)
-	melhores_questoes_pr(problema2_2(pr_10))
+	melhores_questoes_pr(pr_10)
 	print(aux_2_2(pr_10, 10))
 	print ('-----------------------------')
 	
 	print ('20 questoes')
 	pr_20 = problema2_2(a, 20, aluno4)
-	melhores_questoes_pr(problema2_2(pr_20))
+	melhores_questoes_pr(pr_20)
 	print (aux_2_2(pr_20, 20))
 	print ('-----------------------------')
 	
 	print ('50 questoes')
 	pr_50 = problema2_2(a, 50, aluno4)
 	print (aux_2_2(pr_50, 50))
-	melhores_questoes_pr(problema2_2(pr_50))
+	melhores_questoes_pr(pr_50)
 
 
 	# print ('100 aluno1')
