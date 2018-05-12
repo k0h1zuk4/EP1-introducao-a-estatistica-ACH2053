@@ -73,27 +73,84 @@ def problema2_1(questoes, numero, aluno):
 	return resultado	
 
 	
-#checa porbabilidade media de acertar um quetao na prova
-def problema2_2(questoes, numero):
-	melhor_pr = 0.0
-	melhor_prova = None
+#pego o mesmo conjutnto de n questoes e vejo qual dos dois alunos vai melhor 100 vezes.
+#o conjunto de provas onde o aluno5 for melhor entre 100 vezes é a escolhida.
+def problema2_2(questoes, numero, aluno):
+
+	melhor_conjunto_total = 0.0
+	melhores_questoes = None
 
 	for number in range(100000):
 		questoes_sorteadas = sortear_questoes(questoes, numero)
 		
-		pr_atual = 0.0
-		prova_atual = []
+		total_aluno5 = 0.0
 
-		for questao in questoes_sorteadas: 
-			pr = TRI(aluno5, questao)
-			prova_atual.append(questao)	
-			pr_atual = pr_atual + (pr/numero)
+		for number in range(100):
+			nota = 0
+			nota5 = 0
+			
+			for questao in questoes_sorteadas:
+				acertou = random.uniform(0.0, 1.0)
+				acertou5 = random.uniform(0.0, 1.0)
 
-		if pr_atual > melhor_pr:
-			pr_atual = melhor_pr
-			melhor_prova = pr_atual
+				if (TRI(aluno,questao)) > acertou:
+					nota = nota + 1
+				if (TRI(aluno5, questao)) > acertou5:
+					nota5 = nota5 + 1	
+		
+			if nota5 > nota:
+				total_aluno5 = total_aluno5 + 1
+	
+		if total_aluno5 > melhor_conjunto_total:
+			melhor_conjunto_total = total_aluno5 
+			melhores_questoes = questoes_sorteadas
+			#print (total_aluno5)
 
-	return melhor_prova
+	return (melhores_questoes)	
+
+
+def melhores_questoes_pr(melhores_questoes):
+	linha = ''
+	for questao in melhores_questoes:
+		string_pr = str(TRI(aluno5, questao))
+		linha = linha + ' ' + string_pr
+
+	print (linha)
+
+def aux_2_2(questoes, numero):
+	
+	alunos = [aluno1, aluno2, aluno3, aluno4]
+	resp_string = ''
+	
+	for aluno in alunos:
+		
+		total_aluno = 0
+
+		for number in range(100000):
+			questoes_sorteadas = sortear_questoes(questoes, numero)
+			
+			nota = 0
+			nota5 = 0
+
+			for questao in questoes_sorteadas:
+				acertou = random.uniform(0.0, 1.0)
+				acertou5 = random.uniform(0.0, 1.0)
+
+				if (TRI(aluno,questao)) > acertou:
+					nota = nota + 1
+				if (TRI(aluno5, questao)) > acertou5:
+					nota5 = nota5 + 1	
+			
+			if nota > nota5:
+				total_aluno = total_aluno + 1
+		
+		resultado = (100000 - total_aluno) / 100000
+
+		resultado = str(resultado)
+
+		resp_string = resp_string + ' ' + resultado
+	
+	return resp_string
 
 def problema2_3():
 	return
@@ -101,5 +158,35 @@ def problema2_3():
 
 if __name__=='__main__':	
 	a = ler_questoes()
-	b = sortear_questoes(a, 4)
-	print (problema2_1(a, 20, aluno1))
+	
+	print ('10 questoes')
+	pr_10 = problema2_2(a, 10, aluno4)
+	melhores_questoes_pr(problema2_2(pr_10))
+	print(aux_2_2(pr_10, 10))
+	print ('-----------------------------')
+	
+	print ('20 questoes')
+	pr_20 = problema2_2(a, 20, aluno4)
+	melhores_questoes_pr(problema2_2(pr_20))
+	print (aux_2_2(pr_20, 20))
+	print ('-----------------------------')
+	
+	print ('50 questoes')
+	pr_50 = problema2_2(a, 50, aluno4)
+	print (aux_2_2(pr_50, 50))
+	melhores_questoes_pr(problema2_2(pr_50))
+
+
+	# print ('100 aluno1')
+	# print (problema2_1(a, 100, aluno1))
+	# print ('-------------')
+	# print ('100 aluno2')
+	# print (problema2_1(a, 100, aluno2))
+	# print ('-------------')
+	# print ('100 aluno3')
+	# print (problema2_1(a, 100, aluno3))
+	# print ('-------------')
+	# print ('100 aluno4')
+	# print (problema2_1(a, 100, aluno4))
+	# print ('-------------')
+
