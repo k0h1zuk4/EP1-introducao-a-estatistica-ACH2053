@@ -1,9 +1,13 @@
+#python3
 import os
 import argparse
 import sys
 from os import system as system_call 
 import random
 import math
+import numpy as np
+import scipy as sp
+import scipy.stats
 
 aluno1 = -1.0
 aluno2 = -0.5
@@ -17,10 +21,12 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 class Questao():
 	a = 0.0
 	b = 0.0
+	index = 0
 	
-	def __init__(self, a ,b):
+	def __init__(self, a ,b, index):
 		self.a = a
 		self.b = b
+		self.index = index
 
 
 def sortear_questoes(questoes, numero):
@@ -31,13 +37,15 @@ def sortear_questoes(questoes, numero):
 def ler_questoes():	
 	questoes = []
 	with open(dir_path + '/dados/questoes' + ".txt", 'r') as f:
+		index = 0
 		data = f.readlines()
 		for registro in data:
 			a, b = registro.split(' ')
 			a = float(a)
 			b = float(b)
-			questao_atual = Questao(a, b)
+			questao_atual = Questao(a, b, index)
 			questoes.append(questao_atual)
+			index = index + 1
 	return questoes
 
 
@@ -74,11 +82,12 @@ def problema2_1(questoes, numero, aluno):
 
 	
 #pego o mesmo conjutnto de n questoes e vejo qual dos dois alunos vai melhor 100 vezes.
-#o conjunto de provas onde o aluno5 for melhor entre 100 vezes é a escolhida.
+#o conjunto de provas onde o aluno5 for melhor entre 100 vezes e a escolhida.
 def problema2_2(questoes, numero, aluno):
 
 	melhor_conjunto_total = 0.0
 	melhores_questoes = None
+	melhores_questoes_index = []
 
 	for number in range(100000):
 		questoes_sorteadas = sortear_questoes(questoes, numero)
@@ -112,12 +121,12 @@ def problema2_2(questoes, numero, aluno):
 def melhores_questoes_pr(melhores_questoes):
 	linha = ''
 	for questao in melhores_questoes:
-		string_pr = str(TRI(aluno5, questao))
-		linha = linha + ' ' + string_pr
+		#string_pr = str(TRI(aluno5, questao))
+		linha = linha + ' ' + str(questao.index)
 
 	print (linha)
 
-def aux_2_2(questoes, numero):
+def aux_2_2(questoes):
 	
 	alunos = [aluno1, aluno2, aluno3, aluno4]
 	resp_string = ''
@@ -127,12 +136,11 @@ def aux_2_2(questoes, numero):
 		total_aluno = 0
 
 		for number in range(100000):
-			questoes_sorteadas = sortear_questoes(questoes, numero)
 			
 			nota = 0
 			nota5 = 0
 
-			for questao in questoes_sorteadas:
+			for questao in questoes:
 				acertou = random.uniform(0.0, 1.0)
 				acertou5 = random.uniform(0.0, 1.0)
 
@@ -152,31 +160,112 @@ def aux_2_2(questoes, numero):
 	
 	return resp_string
 
-def problema2_3():
-	return
+def intervalo_confianca(data, confidence=0.90):
+    a = 1.0*np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
+    return m, m-h, m+h
+
+def problema2_3(questoes):
+	alunos = [aluno1, aluno2, aluno3, aluno4, aluno5]
+
+	index10 = [92, 74, 78, 80, 32, 65, 86, 81, 34, 66]
+	index20 = [82, 19, 53, 11, 51, 37, 66, 27, 87, 71, 9, 85, 28, 95, 39, 92, 90, 1, 3, 70]
+	index50 = [84, 43, 60, 51, 77, 23, 93, 80, 36, 22, 71, 59, 1, 34, 16, 2, 17, 87, 66, 29, 0, 72, 68, 54, 90, 56, 76, 35, 97, 10, 40, 26, 44, 75, 83, 86, 53, 94, 37, 92, 30, 27, 7, 61, 73, 98, 63, 4, 42, 15]
+
+	questoes10 = []
+	questoes20 = []
+	questoes50 = []
+
+	for questao in questoes:
+		for crr_index in index10:
+			if questao.index == crr_index:
+				questoes10.append(questao)
+		for crr_index in index20:
+			if questao.index == crr_index:
+				questoes20.append(questao)
+		for crr_index in index50:
+			if questao.index == crr_index:
+				questoes50.append(questao)
+
+	for aluno in alunos:
+		print(aluno, '-------------------')
+		nota_10 = []
+		nota_20 = []
+		nota_50 = []
+		nota_100 = []
+
+		for number in range(10000):
+			nota10 = 0
+			nota20 = 0
+			nota50 = 0
+			nota100 = 0
+			
+			for questao in questoes10:
+				acertou = random.uniform(0.0, 1.0)
+
+				if (TRI(aluno, questao)) > acertou:
+					nota10 = nota10 + 1
+
+			nota_10.append(nota10)
+
+			for questao in questoes20:
+				acertou = random.uniform(0.0, 1.0)
+
+				if (TRI(aluno, questao)) > acertou:
+					nota20 = nota20 + 1
+
+			nota_20.append(nota20)
+
+			for questao in questoes50:
+				acertou = random.uniform(0.0, 1.0)
+
+				if (TRI(aluno, questao)) > acertou:
+					nota50 = nota50 + 1
+
+			nota_50.append(nota50)
+
+			for questao in questoes:
+				acertou = random.uniform(0.0, 1.0)
+
+				if (TRI(aluno, questao)) > acertou:
+					nota100 = nota100 + 1
+
+			nota_100.append(nota100)
+
+		print(intervalo_confianca(nota_10))
+		print(intervalo_confianca(nota_20))
+		print(intervalo_confianca(nota_50))
+		print(intervalo_confianca(nota_100))
 
 
 if __name__=='__main__':	
 	a = ler_questoes()
 	
-	print ('10 questoes')
-	pr_10 = problema2_2(a, 10, aluno4)
-	melhores_questoes_pr(pr_10)
-	print(aux_2_2(pr_10, 10))
-	print ('-----------------------------')
-	
-	print ('20 questoes')
-	pr_20 = problema2_2(a, 20, aluno4)
-	melhores_questoes_pr(pr_20)
-	print (aux_2_2(pr_20, 20))
-	print ('-----------------------------')
-	
-	print ('50 questoes')
-	pr_50 = problema2_2(a, 50, aluno4)
-	print (aux_2_2(pr_50, 50))
-	melhores_questoes_pr(pr_50)
+	#2_3
+	problema2_3(a)
 
 
+	#2_2
+	# print ('10 questoes')
+	# pr_10 = problema2_2(a, 10, aluno4)
+	# melhores_questoes_pr(pr_10)
+	# print(aux_2_2(pr_10))
+	# print ('-----------------------------')
+	
+	# print ('20 questoes')
+	# pr_20 = problema2_2(a, 20, aluno4)
+	# melhores_questoes_pr(pr_20)
+	# print (aux_2_2(pr_20))
+	# print ('-----------------------------')
+	
+	# print ('50 questoes')
+	# pr_50 = problema2_2(a, 50, aluno4)
+	# print (aux_2_2(pr_50))
+	# melhores_questoes_pr(pr_50)
+
+	#2_1
 	# print ('100 aluno1')
 	# print (problema2_1(a, 100, aluno1))
 	# print ('-------------')
