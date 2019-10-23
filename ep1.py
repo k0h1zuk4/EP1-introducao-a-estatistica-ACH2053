@@ -15,8 +15,12 @@ aluno3 = 0.0
 aluno4 = 0.5
 aluno5 = 1.0
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+# PARTE II
+# para cada quetão vou rodar a distribuição de probabilidades, considerando erro ou acerto.
+# Fazer o prodtória das probabilidades de todas as perguntas para cada Teta.
+# Ver qual teta gerou a maior probebilidade de ter gerado aquele conjunto de questões
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class Questao():
     a = 0.0
@@ -166,7 +170,7 @@ def intervalo_confianca(data, confidence=0.90):
     n = len(a)
     m, se = np.mean(a), scipy.stats.sem(a)
     h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
-    return m, m-h, m+h
+    return m-h, m+h
 
 def calculando_melhores_questoes(questoes, quantas):
 
@@ -271,9 +275,248 @@ def problema2_3(questoes):
         print(intervalo_confianca(nota_50))
         print(intervalo_confianca(nota_100))
 
+# PARTE II
+# para cada quetão vou rodar a distribuição de probabilidades, considerando erro ou acerto.
+# Fazer o prodtória das probabilidades de todas as perguntas para cada Teta.
+# Ver qual teta gerou a maior probebilidade de ter gerado aquele conjunto de questões
+
+class Aluno():
+    respostas = None
+    index = None
+
+    def __init__(self, respostas, index):
+        self.respostas = respostas
+        self.index = index
+
+def ler_respostas():	
+    alunos = []
+    with open(dir_path + '/dados/respostas' + ".txt", 'r') as f:
+        index = 0
+        lines = f.readlines()
+        
+        for i in range(2000):
+            result = []
+            for line in lines:
+                line.rstrip("\n\r")
+                value = int(line.split(' ')[i])
+                result.append(value)
+            aluno = Aluno(result, i)
+            alunos.append(aluno)
+    
+    return alunos
+
+min = -20
+max = 20
+
+tetas = [round(x*0.1, 2) for x in range(10*min, 10*max+1)]
+
+class TetaRespostas():
+    valor_do_teta = None
+    probabilidade = None
+
+    def __init__(self, valor_do_teta, probabilidade):
+        self.valor_do_teta = valor_do_teta
+        self.probabilidade = probabilidade
+
+def para_cada_aluno_gerar_lista_de_prob(questoes, aluno):
+    tetas_e_probabilidades = []
+
+    for teta in tetas :
+        probs = []
+        for questao in questoes:
+            
+            if aluno.respostas[questao.index] == 0:
+                prob_for_question = 1 - TRI(teta, questao)
+            else:
+                prob_for_question = TRI(teta, questao)
+            
+            probs.append(prob_for_question)
+        prob = 1
+        for x in probs:
+            prob = prob * x
+
+        tetas_e_probabilidades.append(TetaRespostas(teta, prob))
+
+    tetas_e_probabilidades.sort(key=lambda x: x.probabilidade, reverse = True)
+
+    count = 0
+    for teta_e_probabilidade in tetas_e_probabilidades:
+        if count < 1:
+            print(teta_e_probabilidade.valor_do_teta)
+            count = count + 1
+        else:
+            break
+
+# 2_2
+# para cada prova de tamanho N previamente selecionadas: 
+# simular a execução da prova novamente
+# nota utilizando TRI -> Para aquele conjunto de respostas/perguntas/theta temos uma probabilidade, verificar qual tem a maior?
+#
+#
+#
+
+def nota_utilizando_TRI(questoes, respostas, teta):
+    tetas_e_probabilidades = []
+
+    probs = []
+    count = 0
+    for questao in questoes:
+        if respostas[count] == 0:
+            prob_for_question = 1 - TRI(teta, questao)
+        else:
+            prob_for_question = TRI(teta, questao)
+
+        probs.append(prob_for_question)
+
+        count += 1
+    prob = 1
+    for x in probs:
+        prob = prob * x
+
+    return prob
+
+def parte2_2(questoes):
+
+    alunos = [aluno1, aluno2, aluno3, aluno4]
+    resp_string = ''
+    notas_alunos = []
+    count_aluno = 0
+    for aluno in alunos:
+
+        total_aluno = 0
+        notas_aluno = []
+        notas_aluno5 = []
+
+        for number in range(100000):
+
+            nota = 0
+            nota5 = 0
+            
+            respostas = []
+            respostas5 = []
+
+            for questao in questoes:
+                acertou = random.uniform(0.0, 1.0)
+                acertou5 = random.uniform(0.0, 1.0)
+                
+                if (TRI(aluno, questao)) >= acertou:
+                    respostas.append(1)
+                if (TRI(aluno, questao)) < acertou:
+                    respostas.append(0)
+                if (TRI(aluno5, questao)) >= acertou5:
+                    respostas5.append(1)
+                if (TRI(aluno5, questao)) < acertou5:
+                    respostas5.append(0)
+            
+            nota = nota_utilizando_TRI(questoes, respostas, aluno) 
+            nota5 = nota_utilizando_TRI(questoes, respostas5, aluno5)
+            
+            if nota > nota5:
+                total_aluno = total_aluno + 1
+            
+            notas_aluno.append(nota)
+            if count_aluno == 3:
+                notas_aluno5.append(nota5)
+        
+        notas_alunos.append(notas_aluno)
+
+        if count_aluno == 3:
+            notas_alunos.append(notas_aluno5)
+
+        pr = (float(100000 - total_aluno)/100000)
+
+        resp_string = resp_string + ' ' + str(pr)
+
+        count_aluno += 1
+
+    print(resp_string)
+    return notas_alunos
+
+def notas_alunos_acertos(questoes):
+
+    alunos = [aluno1, aluno2, aluno3, aluno4, aluno5]
+    resp_string = ''
+    notas_alunos = []
+
+    for aluno in alunos:
+
+        total_aluno = 0
+        notas_aluno = []
+
+        for number in range(100000):
+
+            nota = 0
+
+            for questao in questoes:
+                acertou = random.uniform(0.0, 1.0)
+
+                if (TRI(aluno, questao)) >= acertou:
+                    nota = nota + 1
+            
+            notas_aluno.append(nota)
+    
+        notas_alunos.append(notas_aluno)
+
+    return notas_alunos
+
+def intervalo_confianca_normal(data, confidence=0.90):
+    a = 1.0*np.array(data)
+    n = len(a)
+    m, se = np.mean(a), scipy.stats.sem(a)
+    h = se * sp.stats.t._ppf((1+confidence)/2., n-1)
+    print (m-h, m+h)
+    return m-h, m+h
+
+def run_interval_for_questions(notas_alunos):
+    response = ''
+    print(len(notas_alunos))
+    for notas_aluno in notas_alunos:
+        print(len(notas_aluno))
+        i, f = intervalo_confianca_normal(notas_aluno)
+        reponse = response + ' ' + str(i) + ' ' + str(f)
+
+    print (response)
 
 if __name__=='__main__':	
     a = ler_questoes()
+    
+    # #PARTE2_1
+    # alunos = ler_respostas()
+    # for aluno in alunos:
+    #     para_cada_aluno_gerar_lista_de_prob(a, aluno)
+
+    #PARTE2_2
+    # top_questoes_10 = calculando_melhores_questoes(a, 10)
+    # notas_alunos_TRI_10 = parte2_2(top_questoes_10)
+    # notas_alunos_normal_10 = notas_alunos_acertos(top_questoes_10)
+    # run_interval_for_questions(notas_alunos_TRI_10)
+    # run_interval_for_questions(notas_alunos_normal_10)
+    
+    
+    # top_questoes_20 = calculando_melhores_questoes(a, 20)
+    # notas_alunos_TRI_20 = parte2_2(top_questoes_20)
+    # notas_alunos_normal_20 = notas_alunos_acertos(top_questoes_20)
+    # run_interval_for_questions(notas_alunos_TRI_20)
+    # run_interval_for_questions(notas_alunos_normal_20)
+    
+    
+    # top_questoes_50 = calculando_melhores_questoes(a, 50)
+    # notas_alunos_TRI_50 = parte2_2(top_questoes_50)
+    # notas_alunos_normal_50 = notas_alunos_acertos(top_questoes_50)
+    # run_interval_for_questions(notas_alunos_TRI_50)
+    # run_interval_for_questions(notas_alunos_normal_50)
+
+
+    notas_alunos_TRI_100 = parte2_2(a)
+    notas_alunos_normal_100 = notas_alunos_acertos(a)
+    run_interval_for_questions(notas_alunos_TRI_100)
+    run_interval_for_questions(notas_alunos_normal_100)
+
+
+    #PARTE2_3
+
+
+
 
     #2_3
     #problema2_3(a)
@@ -311,57 +554,55 @@ if __name__=='__main__':
     # melhores_questoes_pr(pr_50)
 
     #2_1
-    print ('10 aluno1')
-    print (problema2_1(a, 10, aluno1))
-    print ('-------------')
-    print ('10 aluno2')
-    print (problema2_1(a, 10, aluno2))
-    print ('-------------')
-    print ('10 aluno3')
-    print (problema2_1(a, 10, aluno3))
-    print ('-------------')
-    print ('10 aluno4')
-    print (problema2_1(a, 10, aluno4))
-    print ('-------------')
+    # print ('10 aluno1')
+    # print (problema2_1(a, 10, aluno1))
+    # print ('-------------')
+    # print ('10 aluno2')
+    # print (problema2_1(a, 10, aluno2))
+    # print ('-------------')
+    # print ('10 aluno3')
+    # print (problema2_1(a, 10, aluno3))
+    # print ('-------------')
+    # print ('10 aluno4')
+    # print (problema2_1(a, 10, aluno4))
+    # print ('-------------')
 
-    print ('20 aluno1')
-    print (problema2_1(a, 20, aluno1))
-    print ('-------------')
-    print ('20 aluno2')
-    print (problema2_1(a, 20, aluno2))
-    print ('-------------')
-    print ('20 aluno3')
-    print (problema2_1(a, 20, aluno3))
-    print ('-------------')
-    print ('20 aluno4')
-    print (problema2_1(a, 20, aluno4))
-    print ('-------------')
+    # print ('20 aluno1')
+    # print (problema2_1(a, 20, aluno1))
+    # print ('-------------')
+    # print ('20 aluno2')
+    # print (problema2_1(a, 20, aluno2))
+    # print ('-------------')
+    # print ('20 aluno3')
+    # print (problema2_1(a, 20, aluno3))
+    # print ('-------------')
+    # print ('20 aluno4')
+    # print (problema2_1(a, 20, aluno4))
+    # print ('-------------')
 
-    print ('50 aluno1')
-    print (problema2_1(a, 50, aluno1))
-    print ('-------------')
-    print ('50 aluno2')
-    print (problema2_1(a, 50, aluno2))
-    print ('-------------')
-    print ('50 aluno3')
-    print (problema2_1(a, 50, aluno3))
-    print ('-------------')
-    print ('50 aluno4')
-    print (problema2_1(a, 50, aluno4))
-    print ('-------------')
-
-
-    print ('100 aluno1')
-    print (problema2_1(a, 100, aluno1))
-    print ('-------------')
-    print ('100 aluno2')
-    print (problema2_1(a, 100, aluno2))
-    print ('-------------')
-    print ('100 aluno3')
-    print (problema2_1(a, 100, aluno3))
-    print ('-------------')
-    print ('100 aluno4')
-    print (problema2_1(a, 100, aluno4))
-    print ('-------------')
+    # print ('50 aluno1')
+    # print (problema2_1(a, 50, aluno1))
+    # print ('-------------')
+    # print ('50 aluno2')
+    # print (problema2_1(a, 50, aluno2))
+    # print ('-------------')
+    # print ('50 aluno3')
+    # print (problema2_1(a, 50, aluno3))
+    # print ('-------------')
+    # print ('50 aluno4')
+    # print (problema2_1(a, 50, aluno4))
+    # print ('-------------')
 
 
+    # print ('100 aluno1')
+    # print (problema2_1(a, 100, aluno1))
+    # print ('-------------')
+    # print ('100 aluno2')
+    # print (problema2_1(a, 100, aluno2))
+    # print ('-------------')
+    # print ('100 aluno3')
+    # print (problema2_1(a, 100, aluno3))
+    # print ('-------------')
+    # print ('100 aluno4')
+    # print (problema2_1(a, 100, aluno4))
+    # print ('-------------')
